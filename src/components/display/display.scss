@@ -1,0 +1,16 @@
+.display-container {
+  display: flex;
+  width: 30%;
+  height: 20%;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  background-color: #453e;
+  margin: 0 auto;
+  gap: 2em;
+  padding: 1em;
+  background-color: #eee;
+  div {
+    text-align: right;
+  }
+}
