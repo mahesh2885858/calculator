@@ -1,4 +1,5 @@
 import State from "./State";
+import { v4 as uuid } from "uuid";
 type actiontype = {
   type: string;
   data: string;
@@ -35,39 +36,80 @@ const Reducer = (state: typeof State, action: actiontype): typeof State => {
           switch (state.currentOperator) {
             case "+":
               const add =
-                parseInt(state.prevValue) + parseInt(state.currentValue);
+                parseFloat(state.prevValue) + parseFloat(state.currentValue);
               return {
                 ...state,
                 prevValue: add.toString(),
                 currentValue: "",
                 currentOperator: action.data,
+                history: [
+                  ...state.history,
+                  {
+                    currentValue: state.currentValue,
+                    prevValue: state.prevValue,
+                    currentOperator: state.currentOperator,
+                    total: add.toString(),
+                    id: uuid(),
+                  },
+                ],
               };
             case "-":
               const sub =
-                parseInt(state.prevValue) - parseInt(state.currentValue);
+                parseFloat(state.prevValue) - parseFloat(state.currentValue);
               return {
                 ...state,
                 prevValue: sub.toString(),
                 currentValue: "",
                 currentOperator: action.data,
+                history: [
+                  ...state.history,
+                  {
+                    currentValue: state.currentValue,
+                    prevValue: state.prevValue,
+                    currentOperator: state.currentOperator,
+                    total: sub.toString(),
+                    id: uuid(),
+                  },
+                ],
               };
             case "*":
               const multi =
-                parseInt(state.prevValue) * parseInt(state.currentValue);
+                parseFloat(state.prevValue) * parseFloat(state.currentValue);
               return {
                 ...state,
                 prevValue: multi.toString(),
                 currentValue: "",
                 currentOperator: action.data,
+                history: [
+                  ...state.history,
+                  {
+                    currentValue: state.currentValue,
+                    prevValue: state.prevValue,
+                    currentOperator: state.currentOperator,
+                    total: multi.toString(),
+                    id: uuid(),
+                  },
+                ],
               };
             case "/":
               const division =
-                parseInt(state.prevValue) / parseInt(state.currentValue);
+                parseFloat(state.prevValue) / parseFloat(state.currentValue);
               return {
                 ...state,
                 prevValue: division.toString(),
                 currentValue: "",
                 currentOperator: action.data,
+
+                history: [
+                  ...state.history,
+                  {
+                    currentValue: state.currentValue,
+                    prevValue: state.prevValue,
+                    currentOperator: state.currentOperator,
+                    total: division.toString(),
+                    id: uuid(),
+                  },
+                ],
               };
             default:
               return state;
@@ -81,39 +123,79 @@ const Reducer = (state: typeof State, action: actiontype): typeof State => {
         switch (state.currentOperator) {
           case "+":
             const add =
-              parseInt(state.prevValue) + parseInt(state.currentValue);
+              parseFloat(state.prevValue) + parseFloat(state.currentValue);
             return {
               ...state,
               prevValue: add.toString(),
               currentValue: "",
               currentOperator: action.data,
+              history: [
+                ...state.history,
+                {
+                  currentValue: state.currentValue,
+                  prevValue: state.prevValue,
+                  currentOperator: state.currentOperator,
+                  total: add.toString(),
+                  id: uuid(),
+                },
+              ],
             };
           case "-":
             const sub =
-              parseInt(state.prevValue) - parseInt(state.currentValue);
+              parseFloat(state.prevValue) - parseFloat(state.currentValue);
             return {
               ...state,
               prevValue: sub.toString(),
               currentValue: "",
               currentOperator: action.data,
+              history: [
+                ...state.history,
+                {
+                  currentValue: state.currentValue,
+                  prevValue: state.prevValue,
+                  currentOperator: state.currentOperator,
+                  total: sub.toString(),
+                  id: uuid(),
+                },
+              ],
             };
           case "*":
             const multi =
-              parseInt(state.prevValue) * parseInt(state.currentValue);
+              parseFloat(state.prevValue) * parseFloat(state.currentValue);
             return {
               ...state,
               prevValue: multi.toString(),
               currentValue: "",
               currentOperator: action.data,
+              history: [
+                ...state.history,
+                {
+                  currentValue: state.currentValue,
+                  prevValue: state.prevValue,
+                  currentOperator: state.currentOperator,
+                  total: multi.toString(),
+                  id: uuid(),
+                },
+              ],
             };
           case "/":
             const division =
-              parseInt(state.prevValue) / parseInt(state.currentValue);
+              parseFloat(state.prevValue) / parseFloat(state.currentValue);
             return {
               ...state,
               prevValue: division.toString(),
               currentValue: "",
               currentOperator: action.data,
+              history: [
+                ...state.history,
+                {
+                  currentValue: state.currentValue,
+                  prevValue: state.prevValue,
+                  currentOperator: state.currentOperator,
+                  total: division.toString(),
+                  id: uuid(),
+                },
+              ],
             };
           default:
             return state;
@@ -130,6 +212,42 @@ const Reducer = (state: typeof State, action: actiontype): typeof State => {
         currentValue: "",
         prevValue: "",
       };
+    case "HISTORY":
+      const result = state.history.filter((item) => item.id === action.data);
+      console.log(result);
+      return {
+        ...state,
+        prevValue: result[0].prevValue,
+        currentValue: result[0].currentValue,
+        currentOperator: result[0].currentOperator,
+      };
+    case "BACK_SPACE":
+      if (state.currentValue) {
+        const newCurrentValue = state.currentValue.slice(
+          0,
+          state.currentValue.length - 1
+        );
+        return { ...state, currentValue: newCurrentValue };
+      } else if (!state.currentValue && state.currentOperator) {
+        return {
+          ...state,
+          currentValue: state.currentOperator,
+          currentOperator: "",
+        };
+      } else if (
+        !state.currentValue &&
+        !state.currentOperator &&
+        state.prevValue
+      ) {
+        return { ...state, currentValue: state.prevValue, prevValue: "" };
+      } else {
+        return state;
+      }
+    case "CLEAR_ENTRY":
+      const newHistory = state.history.filter(
+        (item) => item.id !== action.data
+      );
+      return { ...state, history: newHistory };
     default:
       return state;
   }
