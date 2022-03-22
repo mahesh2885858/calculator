@@ -1,6 +1,6 @@
 import State from "./State";
-import { v4 as uuid } from "uuid";
-type actiontype = {
+import HelpCompute from "../helpers/compute";
+export type actiontype = {
   type: string;
   data: string;
 };
@@ -21,6 +21,8 @@ const Reducer = (state: typeof State, action: actiontype): typeof State => {
         } else {
           return state;
         }
+      } else if (state.currentValue === "-" && !state.prevValue) {
+        return state;
       } else if (!state.currentValue && state.prevValue) {
         return { ...state, currentOperator: action.data };
       } else {
@@ -35,82 +37,16 @@ const Reducer = (state: typeof State, action: actiontype): typeof State => {
         } else {
           switch (state.currentOperator) {
             case "+":
-              const add =
-                parseFloat(state.prevValue) + parseFloat(state.currentValue);
-              return {
-                ...state,
-                prevValue: add.toString(),
-                currentValue: "",
-                currentOperator: action.data,
-                history: [
-                  ...state.history,
-                  {
-                    currentValue: state.currentValue,
-                    prevValue: state.prevValue,
-                    currentOperator: state.currentOperator,
-                    total: add.toString(),
-                    id: uuid(),
-                  },
-                ],
-              };
-            case "-":
-              const sub =
-                parseFloat(state.prevValue) - parseFloat(state.currentValue);
-              return {
-                ...state,
-                prevValue: sub.toString(),
-                currentValue: "",
-                currentOperator: action.data,
-                history: [
-                  ...state.history,
-                  {
-                    currentValue: state.currentValue,
-                    prevValue: state.prevValue,
-                    currentOperator: state.currentOperator,
-                    total: sub.toString(),
-                    id: uuid(),
-                  },
-                ],
-              };
-            case "*":
-              const multi =
-                parseFloat(state.prevValue) * parseFloat(state.currentValue);
-              return {
-                ...state,
-                prevValue: multi.toString(),
-                currentValue: "",
-                currentOperator: action.data,
-                history: [
-                  ...state.history,
-                  {
-                    currentValue: state.currentValue,
-                    prevValue: state.prevValue,
-                    currentOperator: state.currentOperator,
-                    total: multi.toString(),
-                    id: uuid(),
-                  },
-                ],
-              };
-            case "/":
-              const division =
-                parseFloat(state.prevValue) / parseFloat(state.currentValue);
-              return {
-                ...state,
-                prevValue: division.toString(),
-                currentValue: "",
-                currentOperator: action.data,
+              return HelpCompute(state, action, "+");
 
-                history: [
-                  ...state.history,
-                  {
-                    currentValue: state.currentValue,
-                    prevValue: state.prevValue,
-                    currentOperator: state.currentOperator,
-                    total: division.toString(),
-                    id: uuid(),
-                  },
-                ],
-              };
+            case "-":
+              return HelpCompute(state, action, "-");
+
+            case "*":
+              return HelpCompute(state, action, "*");
+
+            case "/":
+              return HelpCompute(state, action, "/");
             default:
               return state;
           }
@@ -118,90 +54,22 @@ const Reducer = (state: typeof State, action: actiontype): typeof State => {
       }
     case "COMPUTE":
       if (state.currentValue && state.prevValue && state.currentOperator) {
-        //
-
         switch (state.currentOperator) {
           case "+":
-            const add =
-              parseFloat(state.prevValue) + parseFloat(state.currentValue);
-            return {
-              ...state,
-              prevValue: add.toString(),
-              currentValue: "",
-              currentOperator: action.data,
-              history: [
-                ...state.history,
-                {
-                  currentValue: state.currentValue,
-                  prevValue: state.prevValue,
-                  currentOperator: state.currentOperator,
-                  total: add.toString(),
-                  id: uuid(),
-                },
-              ],
-            };
+            return HelpCompute(state, action, "+");
+
           case "-":
-            const sub =
-              parseFloat(state.prevValue) - parseFloat(state.currentValue);
-            return {
-              ...state,
-              prevValue: sub.toString(),
-              currentValue: "",
-              currentOperator: action.data,
-              history: [
-                ...state.history,
-                {
-                  currentValue: state.currentValue,
-                  prevValue: state.prevValue,
-                  currentOperator: state.currentOperator,
-                  total: sub.toString(),
-                  id: uuid(),
-                },
-              ],
-            };
+            return HelpCompute(state, action, "-");
+
           case "*":
-            const multi =
-              parseFloat(state.prevValue) * parseFloat(state.currentValue);
-            return {
-              ...state,
-              prevValue: multi.toString(),
-              currentValue: "",
-              currentOperator: action.data,
-              history: [
-                ...state.history,
-                {
-                  currentValue: state.currentValue,
-                  prevValue: state.prevValue,
-                  currentOperator: state.currentOperator,
-                  total: multi.toString(),
-                  id: uuid(),
-                },
-              ],
-            };
+            return HelpCompute(state, action, "*");
+
           case "/":
-            const division =
-              parseFloat(state.prevValue) / parseFloat(state.currentValue);
-            return {
-              ...state,
-              prevValue: division.toString(),
-              currentValue: "",
-              currentOperator: action.data,
-              history: [
-                ...state.history,
-                {
-                  currentValue: state.currentValue,
-                  prevValue: state.prevValue,
-                  currentOperator: state.currentOperator,
-                  total: division.toString(),
-                  id: uuid(),
-                },
-              ],
-            };
+            return HelpCompute(state, action, "/");
+
           default:
             return state;
         }
-
-        //
       } else {
         return state;
       }
@@ -214,7 +82,6 @@ const Reducer = (state: typeof State, action: actiontype): typeof State => {
       };
     case "HISTORY":
       const result = state.history.filter((item) => item.id === action.data);
-      console.log(result);
       return {
         ...state,
         prevValue: result[0].prevValue,
