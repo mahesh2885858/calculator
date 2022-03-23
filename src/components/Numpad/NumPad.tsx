@@ -36,7 +36,7 @@ const NumPad = (props: {
         <button onClick={() => props.onDigitClick(4)}>4</button>
         <button onClick={() => props.onDigitClick(5)}>5</button>
         <button onClick={() => props.onDigitClick(6)}>6</button>
-        <button onClick={props.backspace}>C</button>
+        <button onClick={props.backspace}>DEL</button>
 
         <button onClick={() => props.onDigitClick(1)}>1</button>
         <button onClick={() => props.onDigitClick(2)}>2</button>
